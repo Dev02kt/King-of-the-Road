@@ -1,4 +1,4 @@
-package io.github.some_example_name;
+package com.badlogic.drop;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
