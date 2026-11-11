@@ -1,8 +1,17 @@
+/*
+    THINGS TO RESEARCH:
+    - FitViewport() -> this seems to be an interesting method from libGDX that might solve
+                       some of our potential issues
+ */
+
+
 package com.badlogic.drop;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -74,7 +83,12 @@ public class Main implements ApplicationListener {
         x_pos = MathUtils.clamp(x_pos, (float)(width * 0.5 - ROAD_WIDTH * 0.5), (float)(width * 0.5 + ROAD_WIDTH * 0.5) - SQUARE_SIZE);
         y_pos = MathUtils.clamp(y_pos, 0, height - (int)SQUARE_SIZE);
 
-        // drawling slop
+        // Drawing
+
+        // NOTE: getProjectionMatrix().setToOrtho2d() needs to be inspected some more,
+        // should be in the resize() method, and from what I understand it is in charge of making sure
+        // everything is still proportional despite the size of the window
+        // (this might only apply to shapes and not textures or sprites)
         shapes.getProjectionMatrix().setToOrtho2D(0f, 0f, width, height);
 
         shapes.begin(ShapeRenderer.ShapeType.Filled);
