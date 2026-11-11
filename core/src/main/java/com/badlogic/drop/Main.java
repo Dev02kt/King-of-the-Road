@@ -15,7 +15,7 @@ public class Main implements ApplicationListener {
     private static final float SPRINT_SPEED = 480;
 
     private ShapeRenderer shapes;
-    private float x_pos = 40f;
+    private float x_pos = 48f;
     private float y_pos = 0f;
 
     @Override
@@ -57,6 +57,7 @@ public class Main implements ApplicationListener {
 
     @Override
     public void render() {
+        ScreenUtils.clear(0f, 150/255f, 0f, 255f);
 
         // deltaTime is essentially helping us to make sure that regardless of hardware (for the most part),
         // everyone's vehicles and environments are moving at the same speed/distance.
@@ -74,7 +75,6 @@ public class Main implements ApplicationListener {
         y_pos = MathUtils.clamp(y_pos, 0, height - (int)SQUARE_SIZE);
 
         // drawling slop
-        ScreenUtils.clear(0f, 150/255f, 0f, 255f);
         shapes.getProjectionMatrix().setToOrtho2D(0f, 0f, width, height);
 
         shapes.begin(ShapeRenderer.ShapeType.Filled);
