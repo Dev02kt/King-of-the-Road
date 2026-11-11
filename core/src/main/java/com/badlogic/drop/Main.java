@@ -16,15 +16,12 @@ public class Main implements ApplicationListener {
 
     private ShapeRenderer shapes;
     private float x_pos = 40f;
-    private float y_pos = 40f;
+    private float y_pos = 0f;
 
     @Override
     public void create() {
         shapes = new ShapeRenderer();
     }
-
-    public float clamp(float value, int min, int max) { return MathUtils.clamp(value, min, max); }
-    public float clamp(float value, float min, float max) { return MathUtils.clamp(value, min, max); }
 
     @Override
     public void resize(int width, int height) {
@@ -36,11 +33,14 @@ public class Main implements ApplicationListener {
     }
 
 
-    private void logic(float dt)
+    private void logic(float deltaTime)
     {
-        float current_speed = dt * ( Gdx.input.isKeyPressed(Keys.SHIFT_LEFT) ? SPRINT_SPEED : NORMAL_SPEED );
+        // We will eventually need to potentially separate this I believe because sprint/nitro
+        // should be capped or on a timer
+        float current_speed = deltaTime * ( Gdx.input.isKeyPressed(Keys.SHIFT_LEFT) ? SPRINT_SPEED : NORMAL_SPEED );
 
-        // verticaL movement
+
+        // vertical movement
         if(Gdx.input.isKeyPressed(Keys.W))
             y_pos += current_speed;
         else if(Gdx.input.isKeyPressed(Keys.S))
@@ -57,8 +57,11 @@ public class Main implements ApplicationListener {
 
     @Override
     public void render() {
-        float dt = Gdx.graphics.getDeltaTime();
-        logic(dt);
+
+        // deltaTime is essentially helping us to make sure that regardless of hardware (for the most part),
+        // everyone's vehicles and environments are moving at the same speed/distance.
+        float deltaTime = Gdx.graphics.getDeltaTime();
+        logic(deltaTime);
 
         // width and height of the visible screen given the current size
         // subject to change on window resize?
@@ -66,8 +69,9 @@ public class Main implements ApplicationListener {
         int height = Gdx.graphics.getHeight();
 
         // clamp the movement values so the "player" cannot escape
-        x_pos = clamp(x_pos, (float)(width * 0.5 - ROAD_WIDTH * 0.5), (float)(width * 0.5 + ROAD_WIDTH * 0.5) - SQUARE_SIZE );
-        y_pos = clamp(y_pos, 0, height - (int)SQUARE_SIZE);
+        // A clamp is basically trapping something between a min and a max value
+        x_pos = MathUtils.clamp(x_pos, (float)(width * 0.5 - ROAD_WIDTH * 0.5), (float)(width * 0.5 + ROAD_WIDTH * 0.5) - SQUARE_SIZE);
+        y_pos = MathUtils.clamp(y_pos, 0, height - (int)SQUARE_SIZE);
 
         // drawling slop
         ScreenUtils.clear(0f, 150/255f, 0f, 255f);
