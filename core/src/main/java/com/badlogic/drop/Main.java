@@ -12,39 +12,46 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
+import static jdk.internal.org.jline.terminal.spi.SystemStream.Input;
+
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
 public class Main implements ApplicationListener {
 
-    private static final float SQUARE_SIZE = 48f;
+    // SQUARE_SIZE
+    private static final float VEHICLE_SIZE = 128f;
     private static final float NORMAL_SPEED = 240f;
     private static final float SPRINT_SPEED = 480;
     private static final float ROAD_WIDTH = 1400f;
 
-    // These are the original shape integrations, showing the original concept
-    private ShapeRenderer shapes;
-    private float x_pos = 48f;
+    private float x_pos = 128f;
     private float y_pos = 0f;
 
     // For FitViewport, we could potentially later change this to
     // an ExtendViewport
-    SpriteBatch spriteBatch;
+    private SpriteBatch spriteBatch;
+    private Sprite redCar;
     private Texture redCarTexture;
     private Texture background;
+    private Texture road;
     private FitViewport viewport;
 
     @Override
     public void create() {
-        shapes = new ShapeRenderer();
-
         redCarTexture = new Texture("red-car.png");
         background = new Texture("temporary/pixel_art_grass_field.png");
+        road = new Texture("temporary/road.png");
         spriteBatch = new SpriteBatch();
+
+        // For object's we will wish to rotate, scale, etc. it is better to be done as a Sprite
+        redCar = new Sprite(redCarTexture);
+        redCar.setSize(128, 128);
         viewport = new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
     }
 
@@ -62,28 +69,32 @@ public class Main implements ApplicationListener {
     @Override
     public void render() {
 
-        // deltaTime is essentially helping us to make sure that regardless of hardware (for the most part),
-        // everyone's vehicles and environments are moving at the same speed/distance.
-        float deltaTime = Gdx.graphics.getDeltaTime();
-        logic(deltaTime);
-
         int browserWidth = Gdx.graphics.getWidth();
         int browserHeight = Gdx.graphics.getHeight();
 
         input();
-        logic(deltaTime);
+        logic();
         draw(browserWidth, browserHeight);
-
-
-        // clamp the movement values so the "player" cannot escape
-        // A clamp is basically trapping something between a min and a max value
-        x_pos = MathUtils.clamp(x_pos, (float)(browserWidth * 0.5 - ROAD_WIDTH * 0.5), (float)(browserWidth * 0.5 + ROAD_WIDTH * 0.5) - SQUARE_SIZE);
-        y_pos = MathUtils.clamp(y_pos, 0, browserHeight - (int)SQUARE_SIZE);
 
     }
 
     private void input(){
+        // deltaTime is essentially helping us to make sure that regardless of hardware (for the most part),
+        // everyone's vehicles and environments are moving at the same speed/distance.
 
+        // The movement logic of the vehicle
+        if(Gdx.input.isKeyPressed(Keys.W)){
+            //y_pos +=
+        }
+        else if(Gdx.input.isKeyPressed(Keys.S)){
+
+        }
+        else if(Gdx.input.isKeyPressed(Keys.A)){
+
+        }
+        else if(Gdx.input.isKeyPressed(Keys.D)){
+
+        }
     }
 
     private void logic(float deltaTime)
@@ -115,10 +126,17 @@ public class Main implements ApplicationListener {
         ScreenUtils.clear(Color.BLACK);
         viewport.apply();
         spriteBatch.setProjectionMatrix(viewport.getCamera().combined);
+
+        // clamp the movement values so the "player" cannot escape
+        // A clamp is basically trapping something between a min and a max value
+        x_pos = MathUtils.clamp(x_pos, (float)(browserWidth * 0.5 - ROAD_WIDTH * 0.5), (float)(browserWidth * 0.5 + ROAD_WIDTH * 0.5) - VEHICLE_SIZE);
+        y_pos = MathUtils.clamp(y_pos, 0, browserHeight - (int)VEHICLE_SIZE);
+
         spriteBatch.begin();
 
         spriteBatch.draw(background, 0, 0, browserWidth, browserHeight);
-        spriteBatch.draw(redCarTexture, 100, 100, 64, 128);
+        spriteBatch.draw(road, (float)browserWidth / 3, 0, (float)browserWidth / 3, browserHeight);
+        redCar.draw(spriteBatch); // This is how to draw sprites
 
         spriteBatch.end();
     }
@@ -135,6 +153,6 @@ public class Main implements ApplicationListener {
 
     @Override
     public void dispose() {
-        shapes.dispose();
+        spriteBatch.dispose();
     }
 }
