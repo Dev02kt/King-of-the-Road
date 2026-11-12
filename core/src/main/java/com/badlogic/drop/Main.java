@@ -24,13 +24,12 @@ import static jdk.internal.org.jline.terminal.spi.SystemStream.Input;
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
 public class Main implements ApplicationListener {
 
-    // SQUARE_SIZE
     private static final float VEHICLE_SIZE = 128f;
-    private static final float NORMAL_SPEED = 240f;
-    private static final float SPRINT_SPEED = 480;
+    private static final float NORMAL_SPEED = 180f;
+    private static final float SPRINT_SPEED = 260f;
     private static final float ROAD_WIDTH = 1400f;
 
-    private float x_pos = 128f;
+    private float x_pos = 500f;
     private float y_pos = 0f;
 
     // For FitViewport, we could potentially later change this to
@@ -73,7 +72,7 @@ public class Main implements ApplicationListener {
         int browserHeight = Gdx.graphics.getHeight();
 
         input();
-        logic();
+        logic(browserWidth, browserHeight);
         draw(browserWidth, browserHeight);
 
     }
@@ -81,44 +80,30 @@ public class Main implements ApplicationListener {
     private void input(){
         // deltaTime is essentially helping us to make sure that regardless of hardware (for the most part),
         // everyone's vehicles and environments are moving at the same speed/distance.
+        float delta = Gdx.graphics.getDeltaTime();
+        float currentSpeed = delta * (Gdx.input.isKeyPressed(Keys.SHIFT_LEFT) ? SPRINT_SPEED : NORMAL_SPEED);
+
 
         // The movement logic of the vehicle
         if(Gdx.input.isKeyPressed(Keys.W)){
-            //y_pos +=
+            redCar.translateY(currentSpeed);
         }
         else if(Gdx.input.isKeyPressed(Keys.S)){
-
+            redCar.translateY(-currentSpeed);
         }
-        else if(Gdx.input.isKeyPressed(Keys.A)){
 
+        if(Gdx.input.isKeyPressed(Keys.A)){
+            redCar.translateX(-currentSpeed);
         }
         else if(Gdx.input.isKeyPressed(Keys.D)){
-
+            redCar.translateX(currentSpeed);
         }
     }
 
-    private void logic(float deltaTime)
-    {
-        // We will eventually need to potentially separate this I believe because sprint/nitro
-        // should be capped or on a timer
-        float current_speed = deltaTime * ( Gdx.input.isKeyPressed(Keys.SHIFT_LEFT) ? SPRINT_SPEED : NORMAL_SPEED );
-
-
-        // vertical movement
-        if(Gdx.input.isKeyPressed(Keys.W))
-            y_pos += current_speed;
-        else if(Gdx.input.isKeyPressed(Keys.S))
-            y_pos -= current_speed;
-
-        // horizontal movement
-        if(Gdx.input.isKeyPressed(Keys.A))
-            x_pos -= current_speed;
-        else if(Gdx.input.isKeyPressed(Keys.D))
-            x_pos += current_speed;
-    }
-
-    private void logic(){
-
+    private void logic(int browserWidth, int browserHeight){
+        // This is where we are clamping the car to the road
+        redCar.setX(MathUtils.clamp(redCar.getX(), (float)browserWidth / 4, ((float)browserWidth / 2) * (float)(1.5) - VEHICLE_SIZE));
+        redCar.setY(MathUtils.clamp(redCar.getY(), 0, browserHeight - VEHICLE_SIZE));
     }
 
     // This method is in charge of displaying the sprites onto the game screen
@@ -127,15 +112,11 @@ public class Main implements ApplicationListener {
         viewport.apply();
         spriteBatch.setProjectionMatrix(viewport.getCamera().combined);
 
-        // clamp the movement values so the "player" cannot escape
-        // A clamp is basically trapping something between a min and a max value
-        x_pos = MathUtils.clamp(x_pos, (float)(browserWidth * 0.5 - ROAD_WIDTH * 0.5), (float)(browserWidth * 0.5 + ROAD_WIDTH * 0.5) - VEHICLE_SIZE);
-        y_pos = MathUtils.clamp(y_pos, 0, browserHeight - (int)VEHICLE_SIZE);
 
         spriteBatch.begin();
 
         spriteBatch.draw(background, 0, 0, browserWidth, browserHeight);
-        spriteBatch.draw(road, (float)browserWidth / 3, 0, (float)browserWidth / 3, browserHeight);
+        spriteBatch.draw(road, (float)browserWidth / 4, 0, (float)browserWidth / 2, browserHeight);
         redCar.draw(spriteBatch); // This is how to draw sprites
 
         spriteBatch.end();
