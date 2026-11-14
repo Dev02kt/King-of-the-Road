@@ -14,12 +14,10 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
-import static jdk.internal.org.jline.terminal.spi.SystemStream.Input;
 
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
 public class Main implements ApplicationListener {
@@ -27,10 +25,7 @@ public class Main implements ApplicationListener {
     private static final float VEHICLE_SIZE = 128f;
     private static final float NORMAL_SPEED = 180f;
     private static final float SPRINT_SPEED = 260f;
-    private static final float ROAD_WIDTH = 1400f;
 
-    private float x_pos = 500f;
-    private float y_pos = 0f;
 
     // For FitViewport, we could potentially later change this to
     // an ExtendViewport
